@@ -1,3 +1,15 @@
+***Just my config for monolith kernel Image what i use for R36S clone***
+May work with any current (d)ArkOS(4Clone) CFW
+The differencies:
+- CONFIG_HZ=1000
+- No I/O scheduler
+- Less debug and security options (why should i need them on game console?) 
+- No ipv6, firewall other "exotic" protocols and QoS options
+- No KVM (first thing to remove)
+- No some rarely needed or even not working drivers
+- Maybe some other options for performance
+
+
 ***For (d)ArkOS4Clone devices only.***
 sudo apt-get update &&\
 sudo apt-get install -y git lzop build-essential gcc \
