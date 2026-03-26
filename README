@@ -1,5 +1,7 @@
-***Just my config for monolith kernel Image what i use for R36S clone***
-May work with any current (d)ArkOS(4Clone) CFW
+*** Just my config for monolithic kernel Image what i use for R36S clone ***
+
+May work with any current (d)ArkOS(4Clone) CFW and RK3326-based consoles.
+
 The differencies:
 - CONFIG_HZ=1000
 - No I/O scheduler
@@ -8,15 +10,11 @@ The differencies:
 - No KVM (first thing to remove)
 - No some rarely needed or even not working drivers
 - Maybe some other options for performance
+- Slightly smaller Image size though it is monolithic
 
+*** How to build ***
 
-***For (d)ArkOS4Clone devices only.***
-sudo apt-get update &&\
-sudo apt-get install -y git lzop build-essential gcc \
-    bc libncurses5-dev libc6-i386 lib32stdc++6 zlib1g:i386 p7zip-full p7zip-rar
-Build
-=====
-- On Ubuntu desktop
+- On Debian-based OS
 
 Required packages
 ```
@@ -46,65 +44,17 @@ aarch64-linux-gnu-gcc -v
 ```
 Clone this git and build the kernel
 ```
-git clone --depth=1 -b rg351 git@github.com:lcdyk0517/arkos.bsp.4.4.git
-cd arkos.bsp.4.4
-make clone_defconfig
+git clone --depth=1 --recurse-submodules git@github.com:PM2D/arkos.bsp.4.4_r36s-opt.git
+cd arkos.bsp.4.4_r36s-opt
+make r36sopt_defconfig
+
+If you want to change some options: make nconfig
+
 make -j$(nproc)
 
-------------------------------------------------------------------------------------------------------------------------------------
-***For RG351 devices only.  For OGA and other clones, switch to the odroidgoA-4.4.y branch.***
-Build
-=====
-- On Ubuntu desktop
-
-Required packages
-```
-sudo apt-get update &&\
-sudo apt-get install -y git lzop build-essential gcc \
-    bc libncurses5-dev libc6-i386 lib32stdc++6 zlib1g:i386 p7zip-full p7zip-rar
-```
-Toolchain 6.3.1
-```
-sudo mkdir -p /opt/toolchains &&\
-wget https://releases.linaro.org/components/toolchain/binaries/6.3-2017.05/aarch64-linux-gnu/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu.tar.xz &&\
-sudo tar Jxvf gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu.tar.xz -C /opt/toolchains/
-```
-Add lines below to ~/.bashrc
-```
-export ARCH=arm64
-export CROSS_COMPILE=aarch64-linux-gnu-
-export PATH=/opt/toolchains/gcc-linaro-6.3.1-2017.05-x86_64_aarch64-linux-gnu/bin/:$PATH
-```
-Run the command below to apply the setting.
-```
-source ~/.bashrc
-```
-Verify the toolchain version to confirm compatibility.  It should show `gcc version 6.3.1 20170404 (Linaro GCC 6.3-2017.05)` in the last line output below Thread model.
-```
-aarch64-linux-gnu-gcc -v
-```
-Clone this git and build the kernel
-```
-git clone --depth=1 -b rg351 https://github.com/christianhaitian/linux.git
-cd linux
-make rg351p_tweaked_defconfig
-make -j$(nproc)
-```
-Once the kernel build is done, you should have an Image and the following dtb files.  These will go to the /boot partition:
+Once the kernel build is done, you should have an Image file
 - arch/arm64/boot/Image
-`ls arch/arm64/boot/Image`
-- arch/arm64/boot/dts/rockchip/rk3326-rg351p-linux.dtb
-`ls arch/arm64/boot/dts/rockchip/rk3326-rg351p*.dtb`
 
-New kernel driver modules will need to be copied to the EXT4 partition:
-`sudo make modules_install ARCH=arm64 INSTALL_MOD_PATH=./<ext4 partition location> && sync`
-
-Make sure to install the compatible libmali video drivers to the EXT4 partition:
-```
-cd video_drivers
-7z e rk3326_r13p0_gbm_with_vulkan_and_cl.7z
-sudo cp libmali.so_rk3326_gbm_arm64_r13p0_with_vulkan_and_cl  ./<ext4 partition location>/usr/local/lib/aarch64-linux-gnu/libmali-bifrost-g31-rxp0-gbm.so
-sudo cp libmali.so_rk3326_gbm_arm32_r13p0_with_vulkan_and_cl  ./<ext4 partition location>/usr/local/lib/arm-linux-gnueabihf/libmali-bifrost-g31-rxp0-gbm.so
 ```
 ------------------------------------------------------------------------------------------------------------------------------------
 
